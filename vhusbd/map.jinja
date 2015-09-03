@@ -1,0 +1,7 @@
+{% import_yaml "vhusbd/defaults.yaml" as default_settings %}
+{% import_yaml "vhusbd/cpuarch_map.yaml" as binary_arch_map %}
+
+{% set binary_source = binary_arch_map.get(grains['cpuarch'], 'vhusbdi386') %}
+{% do default_settings.vhusbd.server.binary.source.update({'name': binary_source}) %}
+
+{% set vhusbd = salt['pillar.get']('vhusbd', default=default_settings.vhusbd, merge=True) %}

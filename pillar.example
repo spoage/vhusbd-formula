@@ -1,0 +1,22 @@
+vhusbd:
+  server:
+    name: server.hostname.com
+    port: 7575
+    tcp_no_delay: True
+    compression_limit: 384
+    broadcast: True
+    attach_to_kernel: False
+    license: "some,license,key"
+    ignored_devices:
+      - usb/dev1
+      - usb/dev2
+    allowed_devices:
+      - usb/dev3
+      - usb/dev4
+    device_nicknames:
+      - name: Some USB Device
+        address: "1234,0000,111"
+      - name: Another USB Device
+        addresses:
+          - "2345,0100,112"
+          - "2345,0100,113"
