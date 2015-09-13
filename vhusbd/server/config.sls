@@ -14,7 +14,7 @@ vhusbd-server-config:
     - template: jinja
     - require:
       - file: vhusbd-server
-    - onchanges_in:
+    - watch_in:
       - service: vhusbd_service
 
 {%- if vhusbd.server.run_as_service %}
