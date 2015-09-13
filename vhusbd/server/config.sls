@@ -23,4 +23,6 @@ vhusbd-stop-before-config:
     - name: vhusbd
     - prereq_in:
       - file: vhusbd-server-config
+    - require_in:
+      - service: vhusbd_service
 {%- endif %}
