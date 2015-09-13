@@ -20,3 +20,7 @@ vhusbd:
         addresses:
           - "2345,0100,112"
           - "2345,0100,113"
+    config:
+      # used by the init file, so required to be correct if run_as_service is true.
+      # defaults to /etc/vhusbd.conf
+      path: /path/to/config/file.ini
