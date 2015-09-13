@@ -1,15 +1,25 @@
 {%- from "vhusbd/map.jinja" import vhusbd with context %}
 
 {%- set server_bin = vhusbd.server.binary %}
+{%- set bin_install_path = server_bin.install_dir ~ "/" ~ server_bin.source.name %}
+
 vhusbd-server:
   file.managed:
-    - name: {{ server_bin.install_dir }}/vhusbd
+    - name: {{ bin_install_path }}
     - source: {{ server_bin.source.get('override', server_bin.source.base ~ server_bin.source.name) }}
     - source_hash: {{ server_bin.source.base ~ "SHA1SUM" }}
     - user: {{ server_bin.user }}
     - group: {{ server_bin.group }}
     - mode: {{ server_bin.mode }}
     - show_diff: False
+
+vhusbd-server-link:
+  file.symlink:
+    - name: {{ server_bin.install_dir }}/vhusbd
+    - target: {{ bin_install_path }}
+    - user: {{ server_bin.user }}
+    - group: {{ server_bin.group }}
+    - mode: {{ server_bin.mode }}
 
 {%- if vhusbd.server.run_as_service %}
 vhusbd-server-init:
