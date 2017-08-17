@@ -1,8 +1,46 @@
-{% import_yaml "vhusbd/defaults.yaml" as default_settings %}
-{% import_yaml "vhusbd/cpuarch_map.yaml" as binary_arch_map %}
+{% set vhusbd_binary_arch_map = {
+    'server': {
+        'i386': 'vhusbdi386',
+        'amd64': 'vhusbdx86_64',
+        'armv6l': 'vhusbdarmpi',
+        'armv7l': 'vhusbdarmpi2',
+    },
+} %}
+
+{% set default_settings = {
+    'server': {
+        'run_as_service': True,
+        'log_file': '/var/log/vhusbd.log',
+        'binary': {
+            'install_dir': '/usr/sbin',
+            'user': 'root',
+            'group': 'root',
+            'mode': 755,
+            'source': {
+                'base': 'https://www.virtualhere.com/sites/default/files/usbserver/',
+                'name': False,
+            },
+        },
+        'config': {
+            'path': '/etc/vhusbd.conf',
+            'user': 'root',
+            'group': 'root',
+            'mode': 644,
+            'source': 'salt://vhusbd/files/server/vhusbd.conf',
+        },
+    },
+} %}
 
 {# get the name of the binary based on the CPU architecture #}
-{% set server_arch_source = binary_arch_map.vhusbd_binary_arch_map.server.get(grains['cpuarch'], 'vhusbdi386') %}
-{% do default_settings.vhusbd.server.binary.source.update({'name': server_arch_source}) %}
+{% if (grains['cpuarch'] == 'armv7l') and ('crc32' in grains['cpu_flags']) %}
+    {# Raspberry Pi 2 and 3 both report as armv7l currently, but only model 3 has the crc32 cpu flag #}
+    {% set server_binary_source = 'vhusbdarmpi3' %} 
+{% else %}
+    {# for everything not a Pi3, use the CPU arch map to determine the binary name #}
+    {% set server_binary_source = vhusbd_binary_arch_map.server.get(grains['cpuarch'], 'vhusbdi386') %}
+{% endif %}
 
-{% set vhusbd = salt['pillar.get']('vhusbd', default=default_settings.vhusbd, merge=True) %}
+{# update the default settings map with the binary name determined above #}
+{% do default_settings.server.binary.source.update({'name': server_binary_source}) %}
+
+{% set vhusbd = salt['pillar.get']('vhusbd', default=default_settings, merge=True) %}

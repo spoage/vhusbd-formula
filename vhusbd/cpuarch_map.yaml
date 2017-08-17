@@ -1,6 +1,0 @@
-vhusbd_binary_arch_map:
-  server:
-    i386: vhusbdi386
-    amd64: vhusbdx86_64
-    armv6l: vhusbdarmpi
-    armv7l: vhusbdarmpi2
